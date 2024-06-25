@@ -1,0 +1,15 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  labels:
+    release: prometheus
+  name: person-service-monitor
+  namespace: default
+spec:
+  endpoints:
+  - port: http-person
+    scheme: http
+    path: actuator/prometheus	
+  selector:
+    matchLabels:
+      service: person-service 

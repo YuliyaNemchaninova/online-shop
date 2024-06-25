@@ -1,0 +1,49 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: person-deployment
+  labels:
+    app: person
+spec:
+  replicas: 1
+  minReadySeconds: 10
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+    type: RollingUpdate
+  selector:
+    matchLabels:
+      app: person
+  template:
+    metadata:
+      labels:
+        app: person
+    spec:
+      containers:
+      - name: person
+        image: ynemchaninova/person:1.0
+        ports:
+        - containerPort: 8000
+        env:
+          # Define the environment variable
+          - name: SPRING_DATASOURCE_URL # Notice that the case is different here
+            # from the key name in the ConfigMap.
+            valueFrom:
+              configMapKeyRef:
+                name: person-config-map           # The ConfigMap this value comes from.
+                key: SPRING_DATASOURCE_URL # The key to fetch.
+          - name: SPRING_DATASOURCE_USERNAME
+            valueFrom:
+              secretKeyRef:
+                name: person-secret
+                key: SPRING_DATASOURCE_USERNAME
+          - name: SPRING_DATASOURCE_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: person-secret
+                key:  SPRING_DATASOURCE_PASSWORD
+
+
+
+
